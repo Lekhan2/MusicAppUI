@@ -95,6 +95,10 @@ fun MainView(){
     val currentScreen= remember{
         viewModel.currentScreen.value
     }
+    val title= remember{
+        mutableStateOf(currentScreen.title)
+    }
+
 
     val modelSheetState= androidx.compose.material.rememberModalBottomSheetState(
         initialValue = ModalBottomSheetValue.Hidden,
@@ -103,9 +107,7 @@ fun MainView(){
     val roundedCornerRadius=if(isSheetFullScreen) 0.dp else 12.dp
 
 
-    val title= remember{
-        mutableStateOf(currentScreen.title)
-    }
+
     val bottombar: @Composable ()-> Unit={
         if (currentScreen is Screen.DrawerSceen || currentScreen == Screen.ButtomScreen.Home){
             BottomNavigation(Modifier.wrapContentSize()) {
@@ -115,7 +117,8 @@ fun MainView(){
                     Log.d("Navigation","${item.btitle}, Current Route: ${currentroute}, Is Selectes")
                     val tint=if(isSelected)Color.White else Color.Black
                     BottomNavigationItem(selected = currentroute==item.bRoute,
-                        onClick = { controller.navigate(item.bRoute)}, icon = {
+                        onClick = { controller.navigate(item.bRoute)
+                                  title.value=item.btitle }, icon = {
 
                             Icon(painter = painterResource(id=item.icon),
                                 null,
@@ -187,7 +190,7 @@ fun MainView(){
             bottomBar = bottombar,
 
             topBar = {
-                TopAppBar(title = { Text(currentScreen.title)},
+                TopAppBar(title = { Text(text = title.value)},
                     actions={
                       IconButton(onClick = {
                           scope.launch {
@@ -220,7 +223,7 @@ fun MainView(){
                             scope.launch {
                                 scaffoldState.drawerState.close()
                             }
-                            if (item.dRoute=="addaccount"){
+                            if (item.dRoute=="addacount"){
                                 dialogOpen.value=true
                             }
                             else{
